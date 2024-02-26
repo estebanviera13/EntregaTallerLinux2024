@@ -5,40 +5,12 @@
 
   tasks:
 
-  #################################
-  ### Actualizacion de paquetes ###
-  #################################
-
-  - name: Update de paquetes Rocky
-    ansible.builtin.yum:
-      name: "*"
-      state: latest
-    when: ansible_os_family == "RedHat"
-    notify: Reinicio del server
-    
-  - name: Update de paquetes Ubuntu
-    ansible.builtin.apt:
-      name: "*"
-      state: latest
-      update_cache: yes
-    when: ansible_os_family == "Debian"
-    notify: Reinicio del server
-  
-
-  ##############################
-  ### Copia de llave publica ###
-  ##############################
-
   - name: Copia de llave publica desde archivo local
     ansible.posix.authorized_key:
       user: sysadmin
       state: present # Si la clave esta no la copia
       key: "{{ lookup('file', '/home/sysadmin/.ssh/id_rsa.pub') }}"
 
-
-  ##################################
-  ### Configuracion de seguridad ###
-  ##################################
 
   - name: No permitir ssh con root
     ansible.builtin.lineinfile:
@@ -54,11 +26,6 @@
       regexp: '^asswordAuthentication='
       line: "PasswordAuthentication no"
     notify: Reinicio de servicio ssh
-
-  #############################
-  ### Reinicio de servicios ###
-  #############################
-
 
   handlers:
 
