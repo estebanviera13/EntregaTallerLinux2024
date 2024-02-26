@@ -1,0 +1,72 @@
+---
+- hosts: linux
+  user: sysadmin
+  become: true
+
+  tasks:
+
+  #################################
+  ### Actualizacion de paquetes ###
+  #################################
+
+  - name: Update de paquetes Rocky
+    ansible.builtin.yum:
+      name: "*"
+      state: latest
+    when: ansible_os_family == "RedHat"
+    notify: Reinicio del server
+    
+  - name: Update de paquetes Ubuntu
+    ansible.builtin.apt:
+      name: "*"
+      state: latest
+      update_cache: yes
+    when: ansible_os_family == "Debian"
+    notify: Reinicio del server
+  
+
+  ##############################
+  ### Copia de llave publica ###
+  ##############################
+
+  - name: Copia de llave publica desde archivo local
+    ansible.posix.authorized_key:
+      user: sysadmin
+      state: present # Si la clave esta no la copia
+      key: "{{ lookup('file', '/home/sysadmin/.ssh/id_rsa.pub') }}"
+
+
+  ##################################
+  ### Configuracion de seguridad ###
+  ##################################
+
+  - name: No permitir ssh con root
+    ansible.builtin.lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '^(P|#P)ermitRootLogin'
+      line: "PermitRootLogin no"
+    notify: Reinicio de servicio ssh
+
+
+  - name: No permitir ssh con user y pass
+    ansible.builtin.lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '^asswordAuthentication='
+      line: "PasswordAuthentication no"
+    notify: Reinicio de servicio ssh
+
+  #############################
+  ### Reinicio de servicios ###
+  #############################
+
+
+  handlers:
+
+  - name: Reinicio del server
+    ansible.builtin.reboot:
+      reboot_timeout: 300
+  
+  - name: Reinicio de servicio ssh
+    ansible.builtin.systemd:
+      name: sshd
+      state: restarted
