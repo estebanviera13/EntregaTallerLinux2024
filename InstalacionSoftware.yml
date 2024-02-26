@@ -1,0 +1,38 @@
+---
+
+- hosts: Rocky
+  user: ansible
+  become: true
+
+  tasks:
+
+  - name: Instalar OpenJDK
+    ansible.builtin.yum: 
+      name: java-1.8.0-openjdk
+      state: present
+
+    
+  - name: Descargar tomcat
+    ansible.builtin.get_url:
+      url: https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.99/bin/apache-tomcat-8.5.99.tar.gz 
+      dest: /home/ansible
+
+  - name: Extraer Tomcat
+    ansible.builtin.unarchive:
+      src: /home/ansible/apache-tomcat-8.5.99.tar.gz
+      dest: /home/ansible/
+      remote_src: yes
+  
+  - name: Mover carpeta
+    command: "mv /home/ansible/apache-tomcat-8.5.99 /opt/tomcat"
+
+  - name: Copy file with owner and permissions
+    ansible.builtin.copy:
+      src: /home/ansible/EntregaTallerLinux2024/sample.war
+      dest: /opt/tomcat/webapps/
+    
+  - name: Levantar  servicio
+    command: "sh /opt/tomcat/bin/catalina.sh"
+
+# crear/copiar archivo sample.war a  /opt/tomcat/webapps/
+# levnatr servicio
