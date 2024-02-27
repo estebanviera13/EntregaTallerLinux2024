@@ -19,3 +19,9 @@
       update_cache: yes
     when: ansible_os_family == "Debian"
     notify: Reinicio del server
+
+  handlers:
+
+    - name: Reinicio del server
+      ansible.builtin.reboot:
+        reboot_timeout: 300  

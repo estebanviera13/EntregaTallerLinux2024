@@ -11,6 +11,11 @@
       name: java-1.8.0-openjdk
       state: present
 
+  - name: Instalar Tar
+    ansible.builtin.yum: 
+      name: tar
+      state: present
+
     
   - name: Descargar tomcat
     ansible.builtin.get_url:
@@ -28,11 +33,10 @@
 
   - name: Copy file with owner and permissions
     ansible.builtin.copy:
-      src: /home/ansible/EntregaTallerLinux2024/sample.war
+      src: /home/ansible/tallerfebrero2024/sample.war
       dest: /opt/tomcat/webapps/
     
   - name: Levantar  servicio
-    command: "sh /opt/tomcat/bin/catalina.sh"
-
-# crear/copiar archivo sample.war a  /opt/tomcat/webapps/
-# levnatr servicio
+    command: "sudo /opt/tomcat/bin/catalina.sh"
+    # ansible.builtin.script: 
+    #   cmd: /opt/tomcat/bin/catalina.sh

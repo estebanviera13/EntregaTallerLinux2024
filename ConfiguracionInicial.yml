@@ -1,15 +1,15 @@
 ---
 - hosts: linux
-  user: sysadmin
+  user: ansible
   become: true
 
   tasks:
 
   - name: Copia de llave publica desde archivo local
     ansible.posix.authorized_key:
-      user: sysadmin
+      user: ansible
       state: present # Si la clave esta no la copia
-      key: "{{ lookup('file', '/home/sysadmin/.ssh/id_rsa.pub') }}"
+      key: "{{ lookup('file', '/home/ansible/.ssh/id_rsa.pub') }}"
 
 
   - name: No permitir ssh con root
@@ -29,10 +29,7 @@
 
   handlers:
 
-  - name: Reinicio del server
-    ansible.builtin.reboot:
-      reboot_timeout: 300
-  
+
   - name: Reinicio de servicio ssh
     ansible.builtin.systemd:
       name: sshd
