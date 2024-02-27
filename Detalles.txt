@@ -1,0 +1,10 @@
+## Orden de ejecución de los playbook ##
+
+ansible-playbook -i inventories/hosts ConfiguracionInicial.yml --ask-become-pass
+ansible-playbook -i inventories/hosts ActualizacionPaquetes.yml --ask-become-pass
+ansible-playbook -i inventories/hosts InstalacionSoftware.yml --ask-become-pass
+
+## Enlace al repositorio ##
+
+https://github.com/estebanviera13/tallerfebrero2024.git
+
