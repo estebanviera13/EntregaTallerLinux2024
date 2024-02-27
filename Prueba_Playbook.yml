@@ -1,0 +1,13 @@
+---
+
+- hosts: Rocky
+  user: sysadmin
+  become: true
+
+  tasks:
+
+  - name: Creacion de usuario Ansible
+    ansible.builtin.user:
+      name: ansible
+      comment: Usuario Ansible
+  
