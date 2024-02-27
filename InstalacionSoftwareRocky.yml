@@ -37,6 +37,6 @@
       dest: /opt/tomcat/webapps/
     
   - name: Levantar  servicio
-    command: "sudo /opt/tomcat/bin/catalina.sh"
+    command: "/opt/tomcat/bin/catalina.sh start"
     # ansible.builtin.script: 
     #   cmd: /opt/tomcat/bin/catalina.sh

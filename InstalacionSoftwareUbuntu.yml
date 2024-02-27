@@ -1,0 +1,72 @@
+---
+- hosts: Ubuntu
+  user: ansible
+  become: true
+ 
+  tasks:
+ 
+ 
+  - name: Instalar UFW
+    ansible.builtin.apt:
+      name: ufw
+      state: present
+      update_cache: true
+    when: ansible_os_family == 'Debian'
+ 
+  - name: Habilitar firewall con puertos deseados
+    community.general.ufw:
+      proto: tcp
+      port: "{{ item }}"
+      rule: allow
+      default: deny
+      state: enabled
+    loop:
+    - 22
+    - 8080
+    when: ansible_os_family == 'Debian'
+ 
+ 
+  - name: Actualizar los paquetes del sistema
+    apt:
+      update_cache: yes
+      upgrade: yes
+ 
+  - name: Apache está instalado
+    apt:
+      name: apache2
+      state: present
+ 
+  - name: Copiar configuracion del proxy
+    copy:
+      src: proxy.conf
+      dest: /etc/apache2/sites-available
+      owner: root
+      group: root
+      mode: '0644'
+    notify: Reiniciar apache
+ 
+  - name: Habilitar sitio de proxy
+    command: a2ensite proxy.conf
+    notify: Reiniciar apache
+ 
+  - name: Apache está iniciado y habilitado
+    systemd:
+      name: apache2
+      state: started
+      enabled: true
+ 
+  - name: Habilitar el servicio http en ufw
+    command: ufw allow 'Apache Full'
+ 
+  - name: Habilitar modulo proxy
+    command: a2enmod proxy
+
+  - name: Habilitar modulo proxy 2
+    command: a2enmod proxy_http
+
+  handlers:
+ 
+  - name: Reiniciar apache
+    systemd:
+      name: apache2
+      state: restarted
